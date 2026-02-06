@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মিলের হিসাব</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
+            --excel-color: #217346;
+            --warning-color: #ff9800;
+            --bg-color: #f0f2f5;
+            --card-bg: white;
+            --text-color: #333;
+            --border-color: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --highlight-color: #f18080;
+        }
+
+        /* ডার্ক থিম ভেরিয়েবল */
+        .theme-dark {
+            --primary-color: #66BB6A;
+            --secondary-color: #42A5F5;
+            --light-color: #424242;
+            --dark-color: #f5f5f5;
+            --danger-color: #EF5350;
+            --success-color: #66BB6A;
+            --excel-color: #388E3C;
+            --warning-color: #FFB74D;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #f5f5f5;
+            --border-color: #444;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --highlight-color: #f38484;
+        }
+
+        /* ব্লু থিম ভেরিয়েবল */
+        .theme-blue {
+            --primary-color: #2196F3;
+            --secondary-color: #03A9F4;
+            --light-color: #e3f2fd;
+            --dark-color: #1565C0;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
+            --excel-color: #1976D2;
+            --warning-color: #FF9800;
+            --bg-color: #e3f2fd;
+            --card-bg: white;
+            --text-color: #1565C0;
+            --border-color: #bbdefb;
+            --shadow-color: rgba(33, 150, 243, 0.1);
+            --highlight-color: #ee7c7c;
+        }
+
+        /* গ্রিন থিম ভেরিয়েবল */
+        .theme-green {
+            --primary-color: #4CAF50;
+            --secondary-color: #66BB6A;
+            --light-color: #e8f5e9;
+            --dark-color: #2E7D32;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
+            --excel-color: #388E3C;
+            --warning-color: #FF9800;
+            --bg-color: #e8f5e9;
+            --card-bg: white;
+            --text-color: #2E7D32;
+            --border-color: #c8e6c9;
+            --shadow-color: rgba(76, 175, 80, 0.1);
+            --highlight-color: #f37a7a;
+        }
+
+        /* পার্পল থিম ভেরিয়েবল */
+        .theme-purple {
+            --primary-color: #9C27B0;
+            --secondary-color: #7B1FA2;
+            --light-color: #f3e5f5;
+            --dark-color: #6A1B9A;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
+            --excel-color: #7B1FA2;
+            --warning-color: #FF9800;
+            --bg-color: #f3e5f5;
+            --card-bg: white;
+            --text-color: #6A1B9A;
+            --border-color: #e1bee7;
+            --shadow-color: rgba(156, 39, 176, 0.1);
+            --highlight-color: #ee7f7f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px white;
+        }
+
+        .theme-light {
+            background: linear-gradient(135deg, #f5f5f5 50%, #4CAF50 50%);
+        }
+
+        .theme-dark-btn {
+            background: linear-gradient(135deg, #424242 50%, #121212 50%);
+        }
+
+        .theme-blue-btn {
+            background: linear-gradient(135deg, #e3f2fd 50%, #2196F3 50%);
+        }
+
+        .theme-green-btn {
+            background: linear-gradient(135deg, #e8f5e9 50%, #4CAF50 50%);
+        }
+
+        .theme-purple-btn {
+            background: linear-gradient(135deg, #f3e5f5 50%, #9C27B0 50%);
+        }
+
+        .input-section {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .mil-rate {
+            background-color: var(--light-color);
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .table-container {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 2px -1px var(--shadow-color);
+            font-size: 11px;
+        }
+
+        tr:hover {
+            background-color: var(--light-color);
+        }
+
+        .name-cell {
+            min-width: 100px;
+            max-width: 120px;
+        }
+
+        .number-cell {
+            text-align: right;
+            min-width: 70px;
+            max-width: 90px;
+        }
+
+        .editable {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .editable:hover {
+            background-color: rgba(33, 150, 243, 0.1);
+        }
+
+        .fine-cell {
+            background-color: rgba(255, 193, 7, 0.2);
+        }
+
+        .fine-cell:hover {
+            background-color: rgba(255, 193, 7, 0.3);
+        }
+
+        /* হাইলাইটেড নাম সেল */
+        .highlight-name {
+            background-color: var(--highlight-color) !important;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-excel {
+            background-color: var(--excel-color);
+            color: white;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-pdf {
+            background-color: #d32f2f;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .summary {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .summary h3 {
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .paid-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            margin-right: 10px;
+            vertical-align: middle;
+            transition: all 0.3s;
+        }
+
+        .paid-indicator.paid {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .paid-indicator.paid::after {
+            content: "✓";
+            color: white;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            line-height: 16px;
+        }
+
+        /* প্রিন্ট ইনফো সেকশন */
+        .print-info {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: none;
+        }
+
+        .print-info.show {
+            display: block;
+        }
+
+        .print-info h3 {
+            margin-bottom: 10px;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .info-value {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* A4 প্রিন্ট স্টাইল */
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+
+            body {
+                background-color: white !important;
+                font-size: 10pt;
+                line-height: 1.2;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+
+            /* প্রিন্টে দেখাবে না এমন এলিমেন্ট */
+            .action-buttons,
+            .input-section,
+            .delete-btn,
+            .theme-selector {
+                display: none !important;
+            }
+
+            /* প্রিন্ট ইনফো দেখাবে */
+            .print-info {
+                display: block !important;
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
+                margin-bottom: 10px !important;
+                page-break-inside: avoid;
+            }
+
+            .print-info .info-label,
+            .print-info .info-value {
+                color: black !important;
+            }
+
+            /* অ্যাকশন কলাম হাইড করুন */
+            th:last-child,
+            td:last-child {
+                display: none !important;
+            }
+
+            .table-container {
+                max-height: none !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                width: 100% !important;
+                page-break-inside: auto;
+            }
+
+            table {
+                width: 100% !important;
+                font-size: 8pt !important;
+                border-collapse: collapse;
+                border: 1px solid #000;
+            }
+
+            th,
+            td {
+                padding: 4px 6px !important;
+                border: 1px solid #ddd !important;
+                page-break-inside: avoid;
+            }
+
+            th {
+                background-color: #f0f0f0 !important;
+                color: black !important;
+                font-weight: bold;
+                border-bottom: 2px solid #000 !important;
+                -webkit-print-color-adjust: exact;
+            }
+
+            /* টেবিলের কলাম সাইজ ঠিক করুন */
+            .name-cell {
+
+                min-width: 80px !important;
+                max-width: 100px !important;
+                width: 80px !important;
+            }
+
+            .number-cell {
+                min-width: 50px !important;
+                max-width: 70px !important;
+                width: 60px !important;
+            }
+
+            header {
+                margin-bottom: 10px !important;
+                border-radius: 0 !important;
+                background-color: #4CAF50 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .summary {
+                margin-top: 10px !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                page-break-inside: avoid;
+            }
+
+            /* ধারাবাহিক প্রিন্ট নিশ্চিত করুন */
+            .table-container {
+                page-break-inside: auto;
+            }
+
+            tbody {
+                page-break-inside: auto;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            /* হেডার প্রতি পেজে দেখান */
+            thead {
+                display: table-header-group;
+            }
+
+            th {
+                position: static !important;
+            }
+
+            /* প্রথম পেজে সবকিছু দেখানোর জন্য */
+            body * {
+                visibility: visible !important;
+            }
+
+            .container * {
+                visibility: visible !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                flex-direction: column;
+            }
+
+            .input-group {
+                width: 100%;
+            }
+
+            th,
+            td {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons button {
+                width: 100%;
+            }
+
+            .table-container {
+                max-height: 60vh;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .theme-selector {
+                justify-content: center;
+            }
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>মিলের হিসাব</h1>
+            <div class="theme-selector">
+                <div class="theme-btn theme-light active" data-theme="light"></div>
+                <div class="theme-btn theme-dark-btn" data-theme="dark"></div>
+                <div class="theme-btn theme-blue-btn" data-theme="blue"></div>
+                <div class="theme-btn theme-green-btn" data-theme="green"></div>
+                <div class="theme-btn theme-purple-btn" data-theme="purple"></div>
+            </div>
+        </header>
+
+        <!-- প্রিন্ট ইনফো সেকশন -->
+        <div class="print-info" id="print-info">
+            <h3>মৌলিক তথ্য</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">তারিখ:</span>
+                    <span class="info-value" id="print-date">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ম্যানেজার:</span>
+                    <span class="info-value" id="print-manager">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ছোট বাজার:</span>
+                    <span class="info-value" id="print-small-market">- টাকা</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">বড় বাজার:</span>
+                    <span class="info-value" id="print-big-market">- টাকা</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ব্যায়িত মোট মিল:</span>
+                    <span class="info-value" id="print-total-meals">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">মিল রেট:</span>
+                    <span class="info-value" id="print-mil-rate">- টাকা</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="date">তারিখ</label>
+                <input type="date" id="date">
+            </div>
+
+            <div class="input-group">
+                <label for="manager">ম্যানেজার</label>
+                <input type="text" id="manager" placeholder="ম্যানেজারের নাম">
+            </div>
+
+            <div class="input-group">
+                <label for="small-market">ছোট বাজার (টাকা)</label>
+                <input type="number" id="small-market" placeholder="ছোট বাজারের খরচ">
+            </div>
+
+            <div class="input-group">
+                <label for="big-market">বড় বাজার (টাকা)</label>
+                <input type="number" id="big-market" placeholder="বড় বাজারের খরচ">
+            </div>
+
+            <div class="input-group">
+                <label for="total-meals">ব্যায়িত মোট মিল</label>
+                <input type="number" id="total-meals" placeholder="মোট মিল সংখ্যা">
+            </div>
+
+            <div class="input-group">
+                <label>মিল রেট</label>
+                <div class="mil-rate" id="mil-rate">0.00</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="members-table">
+                <thead>
+                    <tr>
+                        <th class="name-cell">নাম</th>
+                        <th class="number-cell">জরিমানা মিল</th>
+                        <th class="number-cell">প্রেজেন্ট মিল</th>
+                        <th class="number-cell">ধার/এক্সট্রা (৳)</th>
+                        <th class="number-cell">গেস্ট মিল</th>
+                        <th class="number-cell">মোট ব্যয়িত মিল</th>
+                        <th class="number-cell">জমা টাকা</th>
+                        <th class="number-cell">ব্যয় টাকা</th>
+                        <th class="number-cell">ফেরত টাকা</th>
+                        <th class="number-cell">ম্যানেজার পাবে</th>
+                        <th class="number-cell">পরিশোধ স্ট্যাটাস</th>
+                        <th class="number-cell">অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- ডেটা জাভাস্ক্রিপ্ট দ্বারা যোগ হবে -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-primary" id="save-btn">ডেটা সেভ করুন</button>
+            <button class="btn-secondary" id="add-member-btn">নতুন সদস্য যোগ করুন</button>
+            <button class="btn-excel" id="excel-btn">এক্সেল ডাউনলোড</button>
+            <button class="btn-pdf" id="pdf-btn">PDF প্রিন্ট</button>
+            <button class="btn-danger" id="reset-btn">রিসেট করুন</button>
+        </div>
+
+        <div class="summary">
+            <h3>সারাংশ</h3>
+            <p>মোট সদস্য: <span id="total-members">0</span></p>
+            <p>মোট প্রেজেন্ট মিল: <span id="summary-total-present-meals">0</span></p>
+            <p>মোট জরিমানা মিল: <span id="summary-total-fine-meals">0</span></p>
+            <p>মোট গেস্ট মিল: <span id="summary-total-guest-meals">0</span></p>
+            <p>মোট জমা: <span id="summary-total-deposit">0</span> টাকা</p>
+            <p>মোট ব্যয়: <span id="summary-total-expense">0</span> টাকা</p>
+            <p>পরিশোধিত সদস্য: <span id="summary-paid-members">0</span></p>
+            <p>বকেয়া সদস্য: <span id="summary-due-members">0</span></p>
+            <p>মোট ফেরত পাবে: <span id="summary-total-return">0</span> টাকা</p>
+            <p>মোট ম্যানেজার পাবে: <span id="summary-total-manager">0</span> টাকা</p>
+
+        </div>
+    </div>
+
+    <script>
+        /************ FIREBASE SETUP ************/
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+            projectId: "YOUR_PROJECT",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        /****************************************/
+
+
+        // প্রি-ডিফাইন্ড সদস্য তালিকা - বাংলা নাম (এডিট করা)
+        const predefinedMembers = [
+            "জাহিরুল",
+            "বিজয়",
+            "মান্না",
+            "শাকিল",
+            "বিশাল",
+            "আয়নুল",
+            "পুলক",
+            "মামুন",
+            "দুলু",
+            "মাহফুজ",
+            "সাব্বির",
+            "নাসিফ নুর",
+            "আব্দুর রহমান",
+            "মোল্লা",
+            "মোমিন",
+            "লাবিব",
+            "আলামিন",
+            "মিঠু",
+            "রেজা-২",
+            "তিয়াস",
+            "নাহিদ",
+            "নাফিস",
+            "রাব্বি-২",
+            "ফরহাদ",
+            "ফজলে রাব্বি",
+            "আরাফাত",
+            "রিফাত",
+            "আরিফুল",
+            "ফাহিম",
+            "হামিম",
+            "জয়",
+            "ফারুক",
+            "মারুফ",
+            "রুপম",
+            "নাঈম",
+            "মাহমুদুল",
+            "লক্ষিন্দ্র",
+            "মনির",
+            "রাসেল",
+            "সাকিব",
+            "রাদিব",
+            "মমিনুল",
+            "আলিফ",
+            "দিনার",
+            "অপুল",
+            "হাবিব",
+            "সিয়াদ",
+            "রিয়াদ",
+            "নাসিফ-২",
+            "রেজা-১"
+        ];
+
+        // প্রাথমিক ডেটা - প্রি-ডিফাইন্ড সদস্যরা লোড করুন
+        let members = JSON.parse(localStorage.getItem('members')) || [];
+
+        // যদি লোকাল স্টোরেজে কোন ডেটা না থাকে, প্রি-ডিফাইন্ড সদস্য লোড করুন
+        if (members.length === 0) {
+            members = predefinedMembers.map(name => ({
+                name: name,
+                fineMeals: 0,
+                presentMeals: 0,
+                presentExtra: 0,
+                guestMeals: 0,
+                deposit: 0,
+                paid: false // নতুন ফিল্ড: পরিশোধ স্ট্যাটাস
+            }));
+            saveAllData();
+        }
+
+        let currentDate = new Date().toISOString().split('T')[0];
+
+        // DOM এলিমেন্ট
+        const dateInput = document.getElementById('date');
+        const managerInput = document.getElementById('manager');
+        const smallMarketInput = document.getElementById('small-market');
+        const bigMarketInput = document.getElementById('big-market');
+        const totalMealsInput = document.getElementById('total-meals');
+        const milRateDisplay = document.getElementById('mil-rate');
+        const tableBody = document.getElementById('table-body');
+        const saveBtn = document.getElementById('save-btn');
+        const addMemberBtn = document.getElementById('add-member-btn');
+        const excelBtn = document.getElementById('excel-btn');
+        const pdfBtn = document.getElementById('pdf-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const totalMembersSpan = document.getElementById('total-members');
+        const summaryTotalPresentMealsSpan = document.getElementById('summary-total-present-meals');
+        const summaryTotalFineMealsSpan = document.getElementById('summary-total-fine-meals');
+        const summaryTotalGuestMealsSpan = document.getElementById('summary-total-guest-meals');
+        const summaryTotalDepositSpan = document.getElementById('summary-total-deposit');
+        const summaryTotalExpenseSpan = document.getElementById('summary-total-expense');
+        const summaryPaidMembersSpan = document.getElementById('summary-paid-members');
+        const summaryDueMembersSpan = document.getElementById('summary-due-members');
+        const summaryTotalReturnSpan = document.getElementById('summary-total-return');
+        const summaryTotalManagerSpan = document.getElementById('summary-total-manager');
+
+
+        // প্রিন্ট ইনফো এলিমেন্ট
+        const printInfo = document.getElementById('print-info');
+        const printDate = document.getElementById('print-date');
+        const printManager = document.getElementById('print-manager');
+        const printSmallMarket = document.getElementById('print-small-market');
+        const printBigMarket = document.getElementById('print-big-market');
+        const printTotalMeals = document.getElementById('print-total-meals');
+        const printMilRate = document.getElementById('print-mil-rate');
+
+        // থিম সিস্টেম
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const body = document.body;
+
+        // তারিখ সেট করুন
+        dateInput.value = currentDate;
+
+        // লোকাল স্টোরেজ থেকে মৌলিক তথ্য লোড করার ফাংশন
+        function loadBasicInfoFromLocalStorage() {
+            const savedDate = localStorage.getItem('basicInfo_date');
+            const savedManager = localStorage.getItem('basicInfo_manager');
+            const savedSmallMarket = localStorage.getItem('basicInfo_smallMarket');
+            const savedBigMarket = localStorage.getItem('basicInfo_bigMarket');
+            const savedTotalMeals = localStorage.getItem('basicInfo_totalMeals');
+
+            if (savedDate) dateInput.value = savedDate;
+            if (savedManager) managerInput.value = savedManager;
+            if (savedSmallMarket) smallMarketInput.value = savedSmallMarket;
+            if (savedBigMarket) bigMarketInput.value = savedBigMarket;
+            if (savedTotalMeals) totalMealsInput.value = savedTotalMeals;
+
+            // মিল রেট ক্যালকুলেশন করুন
+            calculateMilRate();
+        }
+
+        // লোকাল স্টোরেজে মৌলিক তথ্য সেভ করার ফাংশন
+        function saveBasicInfoToLocalStorage() {
+            localStorage.setItem('basicInfo_date', dateInput.value);
+            localStorage.setItem('basicInfo_manager', managerInput.value);
+            localStorage.setItem('basicInfo_smallMarket', smallMarketInput.value);
+            localStorage.setItem('basicInfo_bigMarket', bigMarketInput.value);
+            localStorage.setItem('basicInfo_totalMeals', totalMealsInput.value);
+        }
+
+        // থিম পরিবর্তন ফাংশন
+        function changeTheme(themeName) {
+            // সব থিম ক্লাস সরান
+            body.classList.remove('theme-dark', 'theme-blue', 'theme-green', 'theme-purple');
+
+            // নতুন থিম ক্লাস যোগ করুন
+            if (themeName !== 'light') {
+                body.classList.add(`theme-${themeName}`);
+            }
+
+            // সক্রিয় থিম বাটন আপডেট করুন
+            themeButtons.forEach(btn => {
+                if (btn.getAttribute('data-theme') === themeName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // লোকাল স্টোরেজে থিম সংরক্ষণ করুন
+            localStorage.setItem('selectedTheme', themeName);
+        }
+
+        // থিম বাটনে ইভেন্ট যোগ করুন
+        themeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const theme = button.getAttribute('data-theme');
+                changeTheme(theme);
+            });
+        });
+
+        // লোকাল স্টোরেজ থেকে থিম লোড করুন
+        const savedTheme = localStorage.getItem('selectedTheme') || 'light';
+        changeTheme(savedTheme);
+
+        // প্রিন্ট ইনফো আপডেট ফাংশন
+        function updatePrintInfo() {
+            const date = dateInput.value || '-';
+            const manager = managerInput.value || '-';
+            const smallMarket = smallMarketInput.value || '0';
+            const bigMarket = bigMarketInput.value || '0';
+            const totalMeals = totalMealsInput.value || '0';
+            const milRate = milRateDisplay.textContent || '0.00';
+
+            // তারিখ ফরম্যাট করুন
+            const formattedDate = date !== '-' ? new Date(date).toLocaleDateString('en-GB') : '-';
+
+            printDate.textContent = formattedDate;
+            printManager.textContent = manager;
+            printSmallMarket.textContent = smallMarket !== '0' ? `${parseInt(smallMarket).toLocaleString('en-US')} TK` : '-';
+            printBigMarket.textContent = bigMarket !== '0' ? `${parseInt(bigMarket).toLocaleString('en-US')} TK` : '-';
+            printTotalMeals.textContent = totalMeals !== '0' ? parseInt(totalMeals).toLocaleString('en-US') : '-';
+            printMilRate.textContent = milRate !== '0.00' ? `${parseFloat(milRate).toFixed(2)} TK` : '-';
+
+            // যদি কোনো ডেটা থাকে তবে প্রিন্ট ইনফো দেখান
+            if (date !== '-' || manager !== '-' || smallMarket !== '0' || bigMarket !== '0' || totalMeals !== '0') {
+                printInfo.classList.add('show');
+            } else {
+                printInfo.classList.remove('show');
+            }
+        }
+
+        // মিল রেট ক্যালকুলেশন
+        function calculateMilRate() {
+            const smallMarket = parseFloat(smallMarketInput.value) || 0;
+            const bigMarket = parseFloat(bigMarketInput.value) || 0;
+            const totalMeals = parseFloat(totalMealsInput.value) || 1; // শূন্য দ্বারা বিভাজন এড়াতে
+
+            const milRate = (smallMarket + bigMarket) / totalMeals;
+            milRateDisplay.textContent = milRate.toFixed(2) + ' TK';
+
+            // মিল রেট পরিবর্তন হলে টেবিল আপডেট করুন
+            updateTable();
+            // প্রিন্ট ইনফো আপডেট করুন
+            updatePrintInfo();
+        }
+
+        // ইভেন্ট লিসেনার যোগ করুন
+        dateInput.addEventListener('input', () => {
+            saveBasicInfoToLocalStorage();
+            updatePrintInfo();
+        });
+
+        managerInput.addEventListener('input', () => {
+            saveBasicInfoToLocalStorage();
+            updatePrintInfo();
+        });
+
+        smallMarketInput.addEventListener('input', () => {
+            saveBasicInfoToLocalStorage();
+            calculateMilRate();
+        });
+
+        bigMarketInput.addEventListener('input', () => {
+            saveBasicInfoToLocalStorage();
+            calculateMilRate();
+        });
+
+        totalMealsInput.addEventListener('input', () => {
+            saveBasicInfoToLocalStorage();
+            calculateMilRate();
+        });
+
+        // টেবিল আপডেট ফাংশন
+        function updateTable() {
+            tableBody.innerHTML = '';
+            let totalReturnAmount = 0;
+            let totalManagerGets = 0;
+            let totalPresentMeals = 0;
+            let totalFineMeals = 0;
+            let totalGuestMeals = 0;
+            let totalDeposit = 0;
+            let totalExpense = 0;
+            let paidMembers = 0;
+            let dueMembers = 0;
+
+            members.forEach((member, index) => {
+                const fineMeals = member.fineMeals || 0;
+                const presentMeals = member.presentMeals || 0;
+                const presentExtra = member.presentExtra || 0;
+                const guestMeals = member.guestMeals || 0;
+                const deposit = member.deposit || 0;
+                const paid = member.paid || false;
+                const milRate = parseFloat(milRateDisplay.textContent) || 0;
+
+                // মোট ব্যয়িত মিল = প্রেজেন্ট মিল + জরিমানা মিল
+                const totalConsumedMeals = presentMeals + fineMeals;
+
+                // গেস্ট মিল খরচ (প্রতি গেস্ট মিল = 100 টাকা)
+                const guestExpense = guestMeals * 120;
+
+                // মিল খরচ = (প্রেজেন্ট মিল + জরিমানা মিল) × মিল রেট
+                const mealExpense = totalConsumedMeals * milRate;
+
+                // মোট ব্যয় = মিল খরচ + গেস্ট মিল খরচ
+                const expense = mealExpense + guestExpense;
+
+                const returnAmount = Math.max(0, deposit - expense);
+                const managerGets = Math.max(0, expense - deposit);
+                totalReturnAmount += returnAmount;
+                totalManagerGets += managerGets;
+
+
+                // হাইলাইট কন্ডিশন চেক করুন
+                const shouldHighlight = managerGets > 0;
+
+                totalPresentMeals += presentMeals;
+                totalFineMeals += fineMeals;
+                totalGuestMeals += guestMeals;
+                totalDeposit += deposit;
+                totalExpense += expense;
+
+                if (paid) {
+                    paidMembers++;
+                } else {
+                    dueMembers++;
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="name-cell editable ${shouldHighlight ? 'highlight-name' : ''}" data-index="${index}" data-field="name">${member.name || 'নতুন সদস্য'}</td>
+                    <td class="number-cell editable fine-cell" data-index="${index}" data-field="fineMeals">${fineMeals}</td>
+                    <td class="number-cell editable" data-index="${index}" data-field="presentMeals">${presentMeals}</td>
+                    <td class="number-cell editable" data-index="${index}" data-field="presentExtra">${presentExtra}</td>
+                    <td class="number-cell editable" data-index="${index}" data-field="guestMeals">${guestMeals}</td>
+                    <td class="number-cell">${totalConsumedMeals}</td>
+                    <td class="number-cell editable" data-index="${index}" data-field="deposit">${deposit}</td>
+                    <td class="number-cell">${expense.toFixed(2)}</td>
+                    <td class="number-cell">${returnAmount.toFixed(2)}</td>
+                    <td class="number-cell">${managerGets.toFixed(2)}</td>
+                    <td class="number-cell">
+                        <span class="paid-indicator ${paid ? 'paid' : ''}" data-index="${index}"></span>
+                        ${paid ? 'পরিশোধিত' : 'বকেয়া'}
+                    </td>
+                    <td class="number-cell">
+                        <button class="delete-btn" data-index="${index}">ডিলিট</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // সারাংশ আপডেট করুন
+            totalMembersSpan.textContent = members.length;
+            summaryTotalPresentMealsSpan.textContent = totalPresentMeals;
+            summaryTotalFineMealsSpan.textContent = totalFineMeals;
+            summaryTotalGuestMealsSpan.textContent = totalGuestMeals;
+            summaryTotalDepositSpan.textContent = totalDeposit.toFixed(2);
+            summaryTotalExpenseSpan.textContent = totalExpense.toFixed(2);
+            summaryPaidMembersSpan.textContent = paidMembers;
+            summaryDueMembersSpan.textContent = dueMembers;
+            summaryTotalReturnSpan.textContent = totalReturnAmount.toFixed(2);
+            summaryTotalManagerSpan.textContent = totalManagerGets.toFixed(2);
+
+        }
+
+        // লোকাল স্টোরেজে সেভ করুন
+        function saveAllData() {
+            // 1️⃣ LocalStorage
+            localStorage.setItem('members', JSON.stringify(members));
+
+            // 2️⃣ Firebase (Admin only)
+
+            db.ref('members').set(members);
+        }
+        /************ FIREBASE SYNC ************/
+        db.ref('members').on('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                members = data;
+                updateTable(); // 🔥 এখানেই একবার কল হবে
+            }
+        });
+        /*************************************/
+
+
+
+        // ইডিটেবল সেল ক্লিক ইভেন্ট
+        tableBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('editable')) {
+                const index = e.target.getAttribute('data-index');
+                const field = e.target.getAttribute('data-field');
+                const currentValue = e.target.textContent;
+
+                // যদি নাম ফিল্ড হয়
+                if (field === 'name') {
+                    const newName = prompt('নাম লিখুন:', currentValue);
+                    if (newName !== null && newName.trim() !== '') {
+                        members[index][field] = newName.trim();
+                        updateTable();
+                        saveAllData();
+                    }
+                }
+                // যদি সংখ্যাসূচক ফিল্ড হয়
+                else {
+                    const newValue = prompt('মান লিখুন:', currentValue);
+                    if (newValue !== null) {
+                        const numValue = parseFloat(newValue) || 0;
+                        members[index][field] = numValue;
+                        updateTable();
+                        saveAllData();
+                    }
+                }
+            }
+
+            // পরিশোধ স্ট্যাটাস টগল করুন
+            if (e.target.classList.contains('paid-indicator')) {
+                const index = e.target.getAttribute('data-index');
+                members[index].paid = !members[index].paid;
+
+
+                saveAllData();
+
+
+                updateTable();
+
+            }
+
+            // ডিলিট বাটন
+            if (e.target.classList.contains('delete-btn')) {
+                const index = e.target.getAttribute('data-index');
+                if (confirm('আপনি কি এই সদস্যকে ডিলিট করতে চান?')) {
+                    members.splice(index, 1);
+                    updateTable();
+                    saveAllData();
+                }
+            }
+        });
+
+        // নতুন সদস্য যোগ করুন
+        addMemberBtn.addEventListener('click', () => {
+            const newName = prompt('নতুন সদস্যের নাম লিখুন:');
+            if (newName !== null && newName.trim() !== '') {
+                members.push({
+                    name: newName.trim(),
+                    fineMeals: 0,
+                    presentMeals: 0,
+                    guestMeals: 0,
+                    deposit: 0,
+                    paid: false
+                });
+                updateTable();
+                saveAllData();
+            }
+        });
+
+        // ডেটা সেভ করুন
+        saveBtn.addEventListener('click', () => {
+            saveAllData();
+            saveBasicInfoToLocalStorage();
+            alert('ডেটা সফলভাবে সেভ হয়েছে!');
+        });
+
+        // এক্সেল ডাউনলোড
+        excelBtn.addEventListener('click', () => {
+            // মিল রেট পান
+            const milRate = parseFloat(milRateDisplay.textContent) || 0;
+
+            // এক্সেল ডেটা প্রস্তুত করুন
+            const excelData = [
+                ['মিলের হিসাব রিপোর্ট'],
+                ['তারিখ:', dateInput.value || '-'],
+                ['ম্যানেজার:', managerInput.value || '-'],
+                ['ছোট বাজার:', smallMarketInput.value || '0'],
+                ['বড় বাজার:', bigMarketInput.value || '0'],
+                ['মোট মিল:', totalMealsInput.value || '0'],
+                ['মিল রেট:', milRate.toFixed(2)],
+                [], // খালি সারি
+                ['নাম', 'জরিমানা মিল', 'প্রেজেন্ট মিল', 'ধার/এক্সট্রা (৳)', 'গেস্ট মিল', 'মোট ব্যয়িত মিল', 'জমা টাকা', 'ব্যয় টাকা', 'ফেরত টাকা', 'ম্যানেজার পাবে', 'পরিশোধ স্ট্যাটাস']
+            ];
+
+            // সদস্য ডেটা যোগ করুন
+            members.forEach(member => {
+                const fineMeals = member.fineMeals || 0;
+                const presentMeals = member.presentMeals || 0;
+                const guestMeals = member.guestMeals || 0;
+                const deposit = member.deposit || 0;
+                const paid = member.paid ? 'পরিশোধিত' : 'বকেয়া';
+
+                // মোট ব্যয়িত মিল = প্রেজেন্ট মিল + জরিমানা মিল
+                const totalConsumedMeals = presentMeals + fineMeals;
+
+                // গেস্ট মিল খরচ (প্রতি গেস্ট মিল = 120 টাকা)
+                const guestExpense = guestMeals * 120;
+
+                // মিল খরচ = (প্রেজেন্ট মিল + জরিমানা মিল) × মিল রেট
+                const mealExpense = totalConsumedMeals * milRate;
+
+                // মোট ব্যয় = মিল খরচ + গেস্ট মিল খরচ
+                const expense = mealExpense + guestExpense + presentExtra;
+                const returnAmount = Math.max(0, deposit - expense);
+                const managerGets = Math.max(0, expense - deposit);
+
+                excelData.push([
+                    member.name,
+                    fineMeals,
+                    presentMeals,
+                    presentExtra,
+                    guestMeals,
+                    totalConsumedMeals,
+                    deposit,
+                    expense.toFixed(2),
+                    returnAmount.toFixed(2),
+                    managerGets.toFixed(2),
+                    paid
+                ]);
+            });
+
+            // ওয়ার্কবুক তৈরি করুন
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "মিলের হিসাব");
+
+            // এক্সেল ফাইল ডাউনলোড করুন
+            const fileName = `mil_hisab_${dateInput.value || 'report'}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        });
+
+        // PDF প্রিন্ট
+        pdfBtn.addEventListener('click', () => {
+            // প্রিন্ট ইনফো আপডেট করুন
+            updatePrintInfo();
+
+            // প্রিন্ট ডায়ালগ খুলুন
+            window.print();
+        });
+
+        // রিসেট বাটন
+        resetBtn.addEventListener('click', () => {
+            if (confirm('আপনি কি নিশ্চিত যে আপনি সব ডেটা রিসেট করতে চান? এটি পূর্বের সব ডেটা মুছে ফেলবে।')) {
+                // প্রি-ডিফাইন্ড সদস্য লোড করুন
+                members = predefinedMembers.map(name => ({
+                    name: name,
+                    fineMeals: 0,
+                    presentMeals: 0,
+                    guestMeals: 0,
+                    deposit: 0,
+                    paid: false
+                }));
+
+                // ইনপুট ফিল্ড রিসেট করুন
+                dateInput.value = currentDate;
+                managerInput.value = '';
+                smallMarketInput.value = '';
+                bigMarketInput.value = '';
+                totalMealsInput.value = '';
+
+                // লোকাল স্টোরেজ আপডেট করুন
+                saveAllData();
+
+                // মৌলিক তথ্য লোকাল স্টোরেজ থেকে ডিলিট করুন
+                localStorage.removeItem('basicInfo_date');
+                localStorage.removeItem('basicInfo_manager');
+                localStorage.removeItem('basicInfo_smallMarket');
+                localStorage.removeItem('basicInfo_bigMarket');
+                localStorage.removeItem('basicInfo_totalMeals');
+
+                // টেবিল আপডেট করুন
+                updateTable();
+
+
+                // মিল রেট রিসেট করুন
+                milRateDisplay.textContent = '0.00';
+
+                // প্রিন্ট ইনফো লুকান
+                printInfo.classList.remove('show');
+
+                alert('ডেটা রিসেট করা হয়েছে!');
+            }
+        });
+
+        // প্রাথমিক টেবিল আপডেট
+        updateTable();
+        updatePrintInfo();
+        loadBasicInfoFromLocalStorage();
+        /************ PUBLIC LOCK ************/
+
+    </script>
+</body>
+
+</html>
