@@ -1,1 +1,0 @@
-# Mill Management Project
