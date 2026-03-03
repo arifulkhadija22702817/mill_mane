@@ -1325,22 +1325,52 @@
         loadBasicInfoFromLocalStorage();
         /************ PUBLIC LOCK ************/
         
-         const firebaseConfig = {
-               apiKey: "AIzaSyABSZ5R9U8q_cpD8ByRpQhau0AjNzlV-EA",
-               authDomain: "mill-management-21c4a.firebaseapp.com",
-               databaseURL: "https://mill-management-21c4a-default-rtdb.asia-southeast1.firebasedatabase.app",
-               projectId: "mill-management-21c4a",
-               storageBucket: "mill-management-21c4a.firebasestorage.app",
-               messagingSenderId: "464073674937",
-               appId: "1:464073674937:web:e794c88b392dd95fd68b68"
-          };
+  // Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyABSZ5R9U8q_cpD8ByRpQhau0AjNzlV-EA",
+    authDomain: "mill-management-21c4a.firebaseapp.com",
+    databaseURL: "https://mill-management-21c4a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "mill-management-21c4a",
+    storageBucket: "mill-management-21c4a.firebasestorage.app",
+    messagingSenderId: "464073674937",
+    appId: "1:464073674937:web:e794c88b392dd95fd68b68"
+  };
 
   // Initialize Firebase
-          firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-          const database = firebase.database();
-   
-          console.log("Firebase connected successfully!");
+  // Save input data to Firebase
+  function saveAllData() {
+      const data = {
+          date: document.getElementById("date").value,
+          manager: document.getElementById("manager").value,
+          smallMarket: document.getElementById("small-market").value,
+          bigMarket: document.getElementById("big-market").value,
+          totalMeals: document.getElementById("total-meals").value
+      };
+      db.ref("millData").set(data);
+  }
+
+  // Auto-save whenever any input changes
+  document.querySelectorAll("input").forEach(input => {
+      input.addEventListener("change", saveAllData);
+  });
+
+  // Live update from Firebase
+  db.ref("millData").on("value", snapshot => {
+      const data = snapshot.val();
+      if (data) {
+          document.getElementById("date").value = data.date || "";
+          document.getElementById("manager").value = data.manager || "";
+          document.getElementById("small-market").value = data.smallMarket || "";
+          document.getElementById("big-market").value = data.bigMarket || "";
+          document.getElementById("total-meals").value = data.totalMeals || "";
+      }
+  });
+
+  console.log("Firebase online connection ready ✅");
+
 
     </script>
 </body>
