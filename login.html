@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase App (core) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+    <title>Login - মিল হিসাব</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <select id="role">
+            <option value="user">User Login</option>
+            <option value="admin">Admin Login</option>
+        </select>
+        <button id="loginBtn">Login</button>
+        <div class="error" id="errorMsg"></div>
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // Simple hardcoded users (demo purposes)
+        const users = [
+            { username: "user1", password: "user123", role: "user" },
+            { username: "user2", password: "user123", role: "user" },
+            { username: "admin", password: "admin123", role: "admin" }
+        ];
+
+        loginBtn.addEventListener('click', () => {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const role = document.getElementById('role').value;
+
+            const user = users.find(u => u.username === username && u.password === password && u.role === role);
+
+            if (user) {
+                sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+                if (role === 'admin') window.location.href = 'admin.html';
+                else window.location.href = 'user.html';
+            } else {
+                errorMsg.textContent = 'Invalid credentials! আবার চেষ্টা করুন।';
+            }
+        });
+    </script>
+    <script src="./backend/login.js"></script>
+</body>
+
+</html>

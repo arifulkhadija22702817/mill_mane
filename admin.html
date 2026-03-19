@@ -3,31 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>মিলের হিসাব</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Firebase App (core) -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script> -->
-    <!-- Firebase Authentication -->
-    <!-- <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script> -->
-
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="./style/style.css">
-
 </head>
 
 <body>
-
+    <!-- লগইন চেক স্ক্রিপ্ট -->
+    <script>
+        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+        if (!loggedInUser || loggedInUser.role !== 'admin') {
+            window.location.href = "mill.html";
+        }
+    </script>
 
     <div class="container">
         <header>
@@ -151,20 +138,10 @@
 
         </div>
     </div>
-    <script>
-        firebase.auth().onAuthStateChanged((user) => {
-            if (!user) {
-                // যদি কেউ login না করে → login.html এ redirect
-                window.location.href = "login.html";
-            } else {
-                console.log("User logged in:", user.email);
-            }
-        });
-    </script>
 
     <script src="./backend/script.js"></script>
-    <!-- <script src="./backend/server.js"></script>
-    <script src=""></script> -->
+
+
 </body>
 
 </html>
